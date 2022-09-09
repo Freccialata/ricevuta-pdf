@@ -38,7 +38,6 @@
 
         #form-sec>form {
             margin: 5em 10em auto 5em;
-            background-color: rgb(106, 168, 105);
             display: grid;
             padding: 10px 120px 10px 10px;
             row-gap: 10px;
@@ -323,6 +322,7 @@
         }
 
         validate_dati() {
+            // TODO mostra quali campi devono essere modificati in caso di errore
             if (this.dati.anno_fiscale == "" || this.dati.anno_fiscale.length != 4) {
                 return false
             }
