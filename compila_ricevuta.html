@@ -278,21 +278,33 @@
     </header>
     <main>
         <section id="form-sec">
-            <form action="">
-                <label class="labl-col1" for="num-ricevuta">Numero di ricevuta</label>
-                <input class="input-col2" type="text" placeholder="Numero di ricevuta">
+            <form>
+                <label class="labl-col1" for="anno_fiscale">Anno fiscale</label>
+                <input class="input-col2" type="text" name="anno_fiscale" value="2022" readonly>
+                <label class="labl-col1" for="numero_ricevuta">Numero di ricevuta</label>
+                <input class="input-col2" type="number" min="1" name="numero_ricevuta" placeholder="Numero di ricevuta">
+                <label class="labl-col1" for="data_rilascio">Data di rilascio</label>
+                <input class="input-col2" type="date" name="data_rilascio" today>
                 <label class="labl-col1" for="causale">Causale</label>
-                <input class="input-col2" type="text" placeholder="Causale">
-                <label class="labl-col1" for="tipo-ricevuta">Tipo di ricevuta</label>
-                <select class="input-col2" name="tipo-ricevuta">
+                <input class="input-col2" type="text" name="causale" placeholder="Causale">
+                <label class="labl-col1" for="tipo_ricevuta">Tipo di ricevuta</label>
+                <select class="input-col2" name="tipo_ricevuta">
                     <option value="entrata">Entrata</option>
                     <option value="uscita">Uscita</option>
                 </select>
                 <label class="labl-col1" for="importo">Importo</label>
-                <input class="input-col2" type="number" value="0" placeholder="Importo">
-                <label class="labl-col1" for="nome-acquirente">Nome Acquirente</label>
-                <input class="input-col2" type="text" placeholder="Nome Acquirente">
-                <button id="download-btn">Download</button>
+                <input class="input-col2" type="number" name="importo" value="0" placeholder="Importo">
+                <label class="labl-col1" for="nome_acquirente">Nome Acquirente</label>
+                <input class="input-col2" type="text" name="nome_acquirente" placeholder="Nome Acquirente">
+                <label class="labl-col1" for="canale">Canale</label>
+                <select class="input-col2" name="canale">
+                    <option value="contanti" default>Contanti</option>
+                    <option value="bonifico">Bonifico</option>
+                    <option value="Verse">Verse</option>
+                </select>
+                <button type="button" class="labl-col1" id="download-btn">Download</button>
+                <button typre="reset" class="labl-col1" id="clear-btn" onclick="clear_inputs()">Pulisci </button>
+                <button class="labl-col1" onclick="inputs_for_membership_fee()" disabled>Quota associativa</button>
             </form>
         </section>
         <section id="preview-sec"></section>
@@ -304,31 +316,86 @@
     const download_btn = document.getElementById("download-btn")
     let global_pdfprev = ""
 
-    const printPreview = () => {
-        console.log("Chiamata!");
-        const win = window.open("", "pdf download") // "status=1"
-        pdf_template_to_print = create_template_to_print(global_pdfprev)
-        win.document.write(pdf_template_to_print)
-        win.print()
-        win.close()
-    }
-
     class FormToPreview {
         constructor() {
             this.pdfprev_container = document.getElementById("preview-sec")
+            this.dati = {}
+        }
+
+        validate_dati() {
+            if (this.dati.anno_fiscale == "" || this.dati.anno_fiscale.length != 4) {
+                return false
+            }
+            if (this.dati.canale == "") {
+                return false
+            }
+            if (this.dati.causale == "") {
+                return false
+            }
+            if (this.dati.data_rilascio == "gg/mm/aaaa" || this.dati.data_rilascio == "") {
+                return false
+            }
+            if (this.dati.importo == "0" || this.dati.importo == "") {
+                return false
+            }
+            if (this.dati.importo > 0 && this.dati.tipo_ricevuta == "uscita") {
+                return false
+            }
+            if (this.dati.importo < 0 && this.dati.tipo_ricevuta == "entrata") {
+                return false
+            }
+            if (this.dati.nome_acquirente == "") {
+                return false
+            }
+            if (this.dati.numero_ricevuta == "" || this.dati.numero_ricevuta < 1) {
+                return false
+            }
+            if (this.dati.tipo_ricevuta == "") {
+                return false
+            }
+            return true
         }
 
         put(form_inputs) {
-            console.log(form_inputs[0]);
-            let dati = {
-                anno_fiscale: 2022,
-                numero_ricevuta: "null",
-                data_rilascio: "19 maggio 20mai"
-            }
-            this.put_into_template(dati)
+            let dati = {}
+            form_inputs.forEach((el) => {
+                if (el.name == "data_rilascio") {
+                    if (el.value != "") {
+                        let to_date = new Date(el.value)
+                        dati[el.name] = to_date.toLocaleDateString()
+                    }
+                    else {
+                        dati[el.name] = "gg/mm/aaaa"
+                    }
+                }
+                else {
+                    dati[el.name] = el.value
+                }
+            })
+            this.dati = dati
+            this.put_into_template()
         }
 
-        put_into_template(dati) {
+        put_into_template() {
+            let dati = this.dati
+            let persona_dare_avere = ""
+            if (dati.tipo_ricevuta == "entrata") {
+                if (dati.importo >= 0) {
+                    persona_dare_avere = `<td>Ricevuti da:</td> <td>${dati.nome_acquirente}</td>`
+                }
+                else {
+                    persona_dare_avere = "<td>Errore nell'importo! Questa è un'entrata!</td><td></td>"
+                }
+            }
+            else {
+                if (dati.importo <= 0) {
+                    persona_dare_avere = `<td>Consegnati a:</td> <td>${dati.nome_acquirente}</td>`
+                }
+                else {
+                    persona_dare_avere = "<td>Errore nell'importo! Questa è un'uscita!</td><td></td>"
+                }
+            }
+
             const pdfprev = `
                 <style>
                     .page {
@@ -343,9 +410,9 @@
                     }
                     .subpage {
                         padding: 1cm;
-                        border: 5px red solid;
+                        /*border: 5px red solid;*/
                         height: 257mm;
-                        outline: 2cm #FFEAEA solid;
+                        /*outline: 2cm #FFEAEA solid;*/
                     }
             
                     @page {
@@ -508,12 +575,28 @@
                                     </tr>
                                 </table>
                                 <br/>
-
+                                <br/>
                                 <!--<></>--->
-                                <table>
+                                <!--Very bad styiling directly on the element!--->
+                                <table style="width: 80%; border: .4px solid gray; border-collapse: collapse;">
+                                    <tr style="background-color: lightgray; border: .4px solid gray;">
+                                        <th style="text-align:left;" colspan='2'>Ricevuta n° ${dati.anno_fiscale}/${dati.numero_ricevuta}, registrata il ${dati.data_rilascio}</th>
+                                    </tr>
                                     <tr>
-                                        <th>Ricevuta n° ${dati.anno_fiscale}/${dati.numero_ricevuta}, registrata il ${dati.data_rilascio}</th>
-                                    </tr>    
+                                        <td>Importo:</td>
+                                        <td>€${dati.importo}</td>
+                                    </tr>
+                                    <tr style="border: .4px solid gray;">
+                                        ${persona_dare_avere}
+                                    </tr>
+                                    <tr>
+                                        <td>Per:</td>
+                                        <td>${dati.causale}</td>
+                                    </tr>
+                                    <tr style="border: .4px solid gray;">
+                                        <td>Canale:</td>
+                                        <td>${dati.canale}</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -528,13 +611,39 @@
         }
     }
 
-    form_to_preview = new FormToPreview()
+    const printPreview = (form_to_preview) => {
+        console.log("printPreview!");
+
+        if (!form_to_preview.validate_dati()) {
+            alert("Dati inseriti non validi")
+            return
+        }
+        const win = window.open("", "pdf download") // "status=1"
+        pdf_template_to_print = create_template_to_print(global_pdfprev)
+        win.document.write(pdf_template_to_print)
+        win.print()
+        win.close()
+    }
+
+    const clear_inputs = () => {
+        form_inputs.forEach((elem) => {
+            elem.value = ""
+        })
+    }
+
+    const inputs_for_membership_fee = () => {
+        form_inputs[3].value = "Quota associativa"
+        form_inputs[5].value = 10
+    }
+
+    const form_to_preview = new FormToPreview()
     form_to_preview.put(form_inputs)
-    // TODO aggiunta corretta event listener
     form_inputs.forEach((elem) => {
-        elem.addEventListener("onchange", () => form_to_preview.put(form_inputs))
+        elem.addEventListener("change", () => {
+            form_to_preview.put(form_inputs)
+        })
     })
-    download_btn.addEventListener("click", () => printPreview(global_pdfprev))
+    download_btn.addEventListener("click", () => printPreview(form_to_preview))
 </script>
 
 </html>
