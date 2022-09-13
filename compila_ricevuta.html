@@ -6,6 +6,7 @@
     <title>Compila Ricevuta ESN Milano Statale</title>
     <style>
         @import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
         * {
             font-family: 'Lato', sans-serif;
         }
@@ -23,7 +24,7 @@
         h1.title {
             margin-top: 1.8ex;
             grid-column: 2;
-            font-family: "Kelson Sans", "Lato", "sans-serif";
+            font-family: "Kelson Sans", "Lato", "Gill Sans", sans-serif;
         }
 
         main {
@@ -351,7 +352,7 @@
                     <option value="uscita">Uscita</option>
                 </select>
                 <label class="labl-col1" for="importo">Importo</label>
-                <input class="input-col2" type="number" name="importo" value="0" placeholder="Importo">
+                <input class="input-col2" type="number" name="importo" placeholder="Importo">
                 <label class="labl-col1" for="nome_acquirente">Nome Acquirente</label>
                 <input class="input-col2" type="text" name="nome_acquirente" placeholder="Nome Acquirente">
                 <label class="labl-col1" for="canale">Canale</label>
@@ -416,6 +417,7 @@
         }
 
         put(form_inputs) {
+            // The function that is called every time the form inputs are updated (onchange)
             let dati = {}
             form_inputs.forEach((el) => {
                 if (el.name == "data_rilascio") {
@@ -757,7 +759,7 @@
         put_into_preview() {
             this.pdfprev_container.innerHTML = this.html_pdfprev
         }
-    
+
         to_full_HTML() {
             const pdf_template_to_print = `
             <!DOCTYPE html>
@@ -771,7 +773,8 @@
                     margin: 0;
                     padding: 0;
                     background-color: #FAFAFA;
-                    font: 12pt "Lato";
+                    font-size: 12pt;
+                    font-family: "Lato", "Gill Sans", "sans-serif";
                     }
                     * {
                         box-sizing: border-box;
@@ -787,7 +790,8 @@
             return pdf_template_to_print
         }
 
-        HTML_to_PDF_dwl() {
+        HTML_to_PDF() {
+            // Use a library to download a pdf directly client side and *not* with browser print
             // TODO finish!
             const pdf = new jsPDF('p', 'pt', 'letter');
             // source can be HTML-formatted string, or a reference
@@ -797,25 +801,26 @@
             // all coords and widths are in jsPDF instance's declared units
             // 'inches' in this case
             pdf.addHTML(docum_body,
-                function() { 
+                function () {
                     pdf.save(`ricevuta_${this.dati.anno_fiscale}-${this.dati.numero_ricevuta}.pdf`);
                 });
         }
 
-        printPreview () {
-        console.log("printPreview!");
+        printPreview() {
+            // The function that is called by the download button
+            console.log("printPreview!");
 
-        if (!this.validate_dati()) {
-            alert("Dati inseriti non validi")
-            return
+            if (!this.validate_dati()) {
+                alert("Dati inseriti non validi")
+                return
+            }
+            const win = window.open("", "pdf download") // "status=1"
+            let pdf_template_to_print = this.to_full_HTML()
+            win.document.write(pdf_template_to_print)
+            win.print()
+            win.close()
+            // this.HTML_to_PDF()
         }
-        const win = window.open("", "pdf download") // "status=1"
-        let pdf_template_to_print = this.to_full_HTML()
-        win.document.write(pdf_template_to_print)
-        win.print()
-        win.close()
-        // this.HTML_to_PDF_dwl()
-    }
     }
 
     const clear_inputs = () => {
