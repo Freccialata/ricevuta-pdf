@@ -2,7 +2,7 @@
 
 Uno strumento per emettere ricevute in pdf utilizzando html, css, js.
 
-Creato per aiutare il lavoro del Tesoriere di [ESN Milano Statale](milanostatale.esn.it)
+Creato per aiutare il lavoro del Tesoriere di [ESN Milano Statale](https://milanostatale.esn.it)
 
 Risorse:
 
