@@ -6,7 +6,11 @@
     <title>Compila Ricevuta ESN Milano Statale</title>
     <style>
         @import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
-
+        /*@font-face{
+            font-family: "Kelson Sans";
+            src: url('https://github.com/tishinskiy/fonts/blob/master/Kelson%20Sans/kelsonsansregularru-webfont.ttf?raw=true');
+        }*/
+        
         * {
             font-family: 'Lato', sans-serif;
         }
@@ -339,29 +343,32 @@
         <section id="form-sec">
             <form>
                 <label class="labl-col1" for="anno_fiscale">Anno fiscale</label>
-                <input class="input-col2" type="text" name="anno_fiscale" value="2022" readonly>
+                <input class="input-col2" type="text" name="anno_fiscale" value="2022" readonly required>
                 <label class="labl-col1" for="numero_ricevuta">Numero di ricevuta</label>
-                <input class="input-col2" type="number" min="1" name="numero_ricevuta" placeholder="Numero di ricevuta">
+                <input class="input-col2" type="number" min="1" name="numero_ricevuta" placeholder="Numero di ricevuta"
+                    required>
                 <label class="labl-col1" for="data_rilascio">Data di rilascio</label>
-                <input class="input-col2" type="date" name="data_rilascio" today>
+                <input class="input-col2" type="date" name="data_rilascio" today required>
                 <label class="labl-col1" for="causale">Causale</label>
-                <input class="input-col2" type="text" name="causale" placeholder="Causale">
+                <input class="input-col2" type="text" name="causale" placeholder="Causale" required>
                 <label class="labl-col1" for="tipo_ricevuta">Tipo di ricevuta</label>
                 <select class="input-col2" name="tipo_ricevuta">
                     <option value="entrata">Entrata</option>
                     <option value="uscita">Uscita</option>
                 </select>
                 <label class="labl-col1" for="importo">Importo</label>
-                <input class="input-col2" type="number" name="importo" placeholder="Importo">
+                <input class="input-col2" type="number" name="importo" placeholder="Importo" required>
                 <label class="labl-col1" for="nome_acquirente">Nome Acquirente</label>
-                <input class="input-col2" type="text" name="nome_acquirente" placeholder="Nome Acquirente">
+                <input class="input-col2" type="text" name="nome_acquirente" placeholder="Nome Acquirente" required>
                 <label class="labl-col1" for="canale">Canale</label>
-                <select class="input-col2" name="canale">
+                <select class="input-col2" name="canale" required>
                     <option value="contanti" default>Contanti</option>
                     <option value="bonifico">Bonifico</option>
                     <option value="Verse">Verse</option>
                 </select>
-                <button type="button" class="labl-col1" id="download-btn">Download</button>
+                <label class="labl-col1" for="note">Note aggiuntive</label>
+                <textarea class="input-col2" name="note" cols="50" rows="2" placeholder="Note aggiuntive"></textarea>
+                <button type="submit" class="labl-col1" id="download-btn">Download</button>
                 <button typre="reset" class="labl-col1" id="clear-btn" onclick="clear_inputs()">Pulisci </button>
                 <button class="labl-col1" onclick="inputs_for_membership_fee()" disabled>Quota associativa</button>
             </form>
@@ -369,8 +376,10 @@
         <section id="preview-sec"></section>
     </main>
     <footer>
-        <p>Nota: utilizzare la funzione <strong>"Stampa PDF" del browser</strong>, non quella di altri (i.e. non usare "Microsoft print to pdf").</p>
-        <p>Per un corretto utilizzo del programma, installare i font "<strong>Kelson Sans</strong>" e "<strong>Lato</strong>".</p>
+        <p>Nota: utilizzare la funzione <strong>"Stampa PDF" del browser</strong>, non quella di altri (i.e. non usare
+            "Microsoft print to pdf").</p>
+        <p>Per un corretto utilizzo del programma, installare i font "<strong><a href="https://www.fontfabric.com/fonts/kelson-sans/" target="_blank">Kelson Sans</a></strong>" e
+            "<strong><a href="https://fonts.google.com/specimen/Lato" target="_blank">Lato</a></strong>".</p>
     </footer>
 </body>
 <!-- TODO for pdf dwl <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>-->
@@ -408,9 +417,9 @@
             if (this.dati.importo < 0 && this.dati.tipo_ricevuta == "entrata") {
                 return false
             }
-            if (this.dati.nome_acquirente == "") {
+            /*if (this.dati.nome_acquirente == "") {
                 return false
-            }
+            }*/
             if (this.dati.numero_ricevuta == "" || this.dati.numero_ricevuta < 1) {
                 return false
             }
@@ -444,21 +453,35 @@
         put_into_template() {
             let dati = this.dati
             let persona_dare_avere = ""
-            if (dati.tipo_ricevuta == "entrata") {
-                if (dati.importo >= 0) {
-                    persona_dare_avere = `<td>Ricevuti da:</td> <td>${dati.nome_acquirente}</td>`
+            if (dati.nome_acquirente.length > 0) {
+                if (dati.tipo_ricevuta == "entrata") {
+                    if (dati.importo >= 0) {
+                        persona_dare_avere = `<td>Ricevuti da:</td> <td>${dati.nome_acquirente}</td>`
+                    }
+                    else {
+                        persona_dare_avere = "<td>Errore nell'importo! Questa è un'entrata!</td><td></td>"
+                    }
                 }
                 else {
-                    persona_dare_avere = "<td>Errore nell'importo! Questa è un'entrata!</td><td></td>"
+                    if (dati.importo <= 0) {
+                        persona_dare_avere = `<td>Consegnati a:</td> <td>${dati.nome_acquirente}</td>`
+                    }
+                    else {
+                        persona_dare_avere = "<td>Errore nell'importo! Questa è un'uscita!</td><td></td>"
+                    }
                 }
             }
-            else {
-                if (dati.importo <= 0) {
-                    persona_dare_avere = `<td>Consegnati a:</td> <td>${dati.nome_acquirente}</td>`
-                }
-                else {
-                    persona_dare_avere = "<td>Errore nell'importo! Questa è un'uscita!</td><td></td>"
-                }
+
+            let note_aggiuntive = ""
+            if (dati.note.length > 0) {
+                note_aggiuntive = `
+                <tr>
+                    <td colspan='2'><i>Note Aggiuntive:</i></td>
+                </tr>
+                <tr>
+                    <td colspan='2'>${dati.note}</td>
+                </tr>
+                `
             }
 
             const pdfprev = `
@@ -736,14 +759,14 @@
                                     <tr style="background-color: lightgray; border: .4px solid gray;">
                                         <th style="text-align:left;" colspan='2'>Ricevuta n° ${dati.anno_fiscale}/${dati.numero_ricevuta}, registrata il ${dati.data_rilascio}</th>
                                     </tr>
-                                    <tr>
+                                    <tr style="border: .4px solid gray;">
                                         <td>Importo:</td>
                                         <td>€${dati.importo}</td>
                                     </tr>
                                     <tr style="border: .4px solid gray;">
                                         ${persona_dare_avere}
                                     </tr>
-                                    <tr>
+                                    <tr style="border: .4px solid gray;">
                                         <td>Per:</td>
                                         <td>${dati.causale}</td>
                                     </tr>
@@ -751,6 +774,7 @@
                                         <td>Canale:</td>
                                         <td>${dati.canale}</td>
                                     </tr>
+                                    ${note_aggiuntive}
                                 </table>
                             </div>
                         </div>
@@ -812,8 +836,6 @@
 
         printPreview() {
             // The function that is called by the download button
-            console.log("printPreview!");
-
             if (!this.validate_dati()) {
                 alert("Dati inseriti non validi")
                 return
