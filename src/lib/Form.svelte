@@ -77,13 +77,14 @@
             class="input-col2"
             type="number"
             name="importo"
+            id="importo"
             placeholder="Importo"
             min="0.01"
             step=".01"
             required
         />
         <label class="labl-col1" for="canale">Canale</label>
-        <select class="input-col2" name="canale" required>
+        <select class="input-col2" name="canale" id="canale" required>
             <option value="contanti">Contanti</option>
             <option value="bonifico">Bonifico</option>
         </select>

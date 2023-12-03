@@ -6,7 +6,10 @@ const loadTemplateFromStaticFolder = async () => {
     return ricevuta_template as Template;
 }
 
-const template = await loadTemplateFromStaticFolder(); 
+let template: Template;
+loadTemplateFromStaticFolder().then(templ => {
+    template = templ;
+})
 
 export type dati_ricevuta = {
     anno_fiscale: string,
