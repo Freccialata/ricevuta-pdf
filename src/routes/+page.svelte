@@ -5,7 +5,7 @@
 </script>
 
 <header>
-    <img id="header-logo" src="./esn-milano-statale-logo-colour.svg" alt="ESN Milano Statale Logo">
+    <img id="header-logo" src="esn-milano-statale-logo-colour.svg" alt="ESN Milano Statale Logo">
     <h1 class="title">Compila Ricevuta PDF</h1>
 </header>
 
