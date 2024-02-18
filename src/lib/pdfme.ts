@@ -14,7 +14,7 @@ loadTemplateFromStaticFolder().then(templ => {
 export type dati_ricevuta = {
     anno_fiscale: string,
     numero_ricevuta: string,
-    data_rilascio: string,
+    data_rilascio: Date,
     causale: string,
     ricevuti_da: string,
     importo: string,
@@ -34,12 +34,19 @@ const mapInputs = (dati: dati_ricevuta) =>  {
         clean_note_aggiuntive = dati.note_aggiuntive
     }
 
+    let clean_importo = dati.importo;
+    const parts = dati.importo.split(".");
+    if (parts.length == 2) {
+        clean_importo = parts[0] + "," + parts[1];
+    }
+    // If necessary, handle also € "1,000.14" to "1.000,14" cases
+
     return [{
         numero_ricevuta: clean_numero_ricevuta,
         data_rilascio: clean_data_rilascio, // make sure it's a date?
         causale: dati.causale,
         ricevuti_da: dati.ricevuti_da,
-        importo: `€ ${dati.importo}`,
+        importo: `€ ${clean_importo}`,
         canale: dati.canale,
         note_aggiuntive: clean_note_aggiuntive,
     }]

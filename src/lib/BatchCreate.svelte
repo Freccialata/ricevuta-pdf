@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { handleTransactionBook } from "$lib/BatchCreate";
+    import { handleTransactionBook, bar_percentage } from "$lib/BatchCreate";
 
     const handleCsvInput = (event: {
         currentTarget: EventTarget & HTMLFormElement;
@@ -28,6 +28,7 @@
             handleTransactionBook(text as string);
         };
     }
+
 </script>
 
 <section>
@@ -81,7 +82,15 @@
         Tieni presente che il numero di transazioni che hai nel CSV corrisponderà al numero di ricevute PDF che ti ritroverai scaricate nel dispositivo.
         Se hai 5 voci, verranno scaricati 5 file; se hai 800 voci, verranno scaricati 800 file.
     </p>
-</section>
+    <div>
+        <h4>Percentuale conversione</h4>
+        <span>{$bar_percentage}%</span>
+        <div class="loading-bar">
+        <div class="l-bar-fill" style="width: {$bar_percentage}%">
+        </div>
+    </div>
+    </div>
+</section>  
 
 <style>
     section {
@@ -120,5 +129,17 @@
     }
     button:active {
         background-color: rgb(21, 209, 21);
+    }
+
+    .loading-bar {
+        display: block;
+        width: 40%;
+        height: 40px;
+        border: solid;
+    }
+
+    .l-bar-fill {
+        background-color: rgb(21, 209, 21);
+        height: inherit;
     }
 </style>

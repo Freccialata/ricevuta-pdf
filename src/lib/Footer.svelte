@@ -4,7 +4,7 @@
     <ul>
         <li>
             Creato per l'Associazione <strong
-                >Erasmus Stutent Network - Università degli Studi di Milano</strong
+                >Erasmus Student Network - Università degli Studi di Milano</strong
             >
         </li>
         <li>
