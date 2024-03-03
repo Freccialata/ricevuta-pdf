@@ -87,6 +87,7 @@
         <select class="input-col2" name="canale" id="canale" required>
             <option value="contanti">Contanti</option>
             <option value="bonifico">Bonifico</option>
+            <option value="Gomry">Gomry</option>
         </select>
         <label class="labl-col1" for="note_aggiuntive">Note aggiuntive</label>
         <textarea

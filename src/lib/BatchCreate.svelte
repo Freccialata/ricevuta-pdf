@@ -60,15 +60,25 @@
                 <td>126</td>
                 <td>13/09/2023</td>
                 <td>Viaggio Como Settembre</td>
-                <td>15</td>
+                <td>15.25</td>
                 <td>Maria Rossella</td>
                 <td>Bonifico</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>127</td>
+                <td>26.09.2023</td>
+                <td>Cancelleria</td>
+                <td>9.99</td>
+                <td>Giovanna Romano</td>
+                <td>Contanti</td>
                 <td></td>
             </tr>
         </table>
         <p>Fai in modo che la prima riga del CSV presenti esattamente le <strong>sette</strong> colonne che vedi.</p>
         <p>Devono essere le prime sette colonne. Se ce ne sono altre dopo, esse verranno ignorate.</p>
         <p>Assicurati anche di selezionare la <strong>virgola (,) come separatore</strong> nel momento dell'esportazione da Excel o G Sheets.</p>
+        <p>Il <strong>formato della data</strong> è <code>gg/mm/aaaa</code> (giorno, mese, anno), altri formati (come <code>mm/gg/aaaa</code>) potrebbero generare <i>errori</i> o produrre PDF con la data errata. Puoi usare le date anche con il separatore <code>gg.mm.aaaa</code>.</p>
     </div>
 
     <div class="csv-upload">

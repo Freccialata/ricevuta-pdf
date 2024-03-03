@@ -20,12 +20,7 @@ const checkColumns = (parsed_csv: DSVRowArray<string>) => {
 }
 
 const mapRow = (row: DSVRowString<string>) => {
-    let data_rilascio_obj = new Date(row["Data di rilascio"])
-    if (data_rilascio_obj.toString() === "Invalid Date") {
-        const date_vals = row["Data di rilascio"].split(".")
-        const data_rilascio_usa = date_vals[1] + "." + date_vals[0] + "." + date_vals[2]
-        data_rilascio_obj = new Date(data_rilascio_usa)
-    }
+    let data_rilascio_obj = dateParserEur(row["Numero di ricevuta"], row["Data di rilascio"]);
     
     return {
         anno_fiscale: data_rilascio_obj.getFullYear().toString(),
@@ -78,11 +73,32 @@ export const handleTransactionBook = async (transazioni_csv: string) => {
             
         }
         const perc = Math.round(((i+1) / transazioni.length) * 100);
-        console.log(perc);
+        console.log(perc, "%");
         bar_percentage.set(perc) // WRITABLE
     }
 }
 
 export const sleep = (ms: number) => {
     return new Promise<undefined>(resolve => setTimeout(resolve, ms));
+}
+
+/** Parse and enforce `dd/mm/yyyy` date format */
+const dateParserEur = (num_ricevuta: string, data_rilascio_txt: string) => {
+    let data_rilascio_split = data_rilascio_txt.split("/");
+    if (data_rilascio_split.length != 3) {
+        data_rilascio_split = data_rilascio_txt.split(".");
+    }
+    if (data_rilascio_split.length != 3) {
+        return new Date("Invalid Date");
+    }
+
+    const data_rilascio_usa = `${data_rilascio_split[1]}.${data_rilascio_split[0]}.${data_rilascio_split[2]}`
+    const data_rilascio_obj = new Date(data_rilascio_usa)
+    if (data_rilascio_obj.toString() === "Invalid Date") {
+        console.error( "Ricevuta", num_ricevuta,
+            "\nNon riesco a leggere la data", data_rilascio_txt,
+            "\nPotrebbe essere in formato americano?"
+        );
+    }
+    return data_rilascio_obj
 }

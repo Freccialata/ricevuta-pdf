@@ -1,3 +1,9 @@
 * {
     font-family: 'Lato', sans-serif;
 }
+
+code {
+    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+    background-color: rgb(237, 237, 237);
+    border-radius: 4px;
+}
